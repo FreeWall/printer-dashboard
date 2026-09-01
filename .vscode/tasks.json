@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "Spustit lokální server",
+      "detail": "yarn dev",
+      "problemMatcher": [],
+      "command": "yarn dev",
+      "icon": {
+        "id": "run",
+        "color": "terminal.ansiCyan"
+      }
+    }
+  ]
+}
