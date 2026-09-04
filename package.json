@@ -1,7 +1,7 @@
 {
-  "name": "printer-webcam",
+  "name": "printer-dashboard",
   "version": "1.0.0",
-  "description": "Floating 3D Printer RTSP Webcam viewer with Tray support",
+  "description": "Floating 3D Printer Dashboard and RTSP viewer with Tray support",
   "main": "dist-electron/main.js",
   "scripts": {
     "build:electron": "esbuild electron/main.ts --bundle --platform=node --target=node18 --outfile=dist-electron/main.js --external:electron && esbuild electron/preload.ts --bundle --platform=node --target=node18 --outfile=dist-electron/preload.js --external:electron",

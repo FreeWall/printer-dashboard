@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Printer Dashboard
+Comment=Floating 3D Printer Dashboard and RTSP viewer
+Exec=bash -c "cd /home/mvanek/projects/FreeWall/printer-dashboard && yarn start"
+Icon=/home/mvanek/projects/FreeWall/printer-dashboard/assets/icon.png
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupWMClass=printer-dashboard

@@ -24,6 +24,7 @@ export interface ElectronAPI {
   onStreamConfigChange: (callback: (config: AppConfig) => void) => () => void;
   onMaximizedChange: (callback: (isMaximized: boolean) => void) => () => void;
   onPrinterStatusChange: (callback: (data: any) => void) => () => void;
+  onPrinterFinished: (callback: () => void) => () => void;
 }
 
 const electronAPI: ElectronAPI = {
@@ -57,6 +58,13 @@ const electronAPI: ElectronAPI = {
     ipcRenderer.on('printer-status-updated', handler);
     return () => {
       ipcRenderer.removeListener('printer-status-updated', handler);
+    };
+  },
+  onPrinterFinished: (callback: () => void) => {
+    const handler = () => callback();
+    ipcRenderer.on('printer-status-finished', handler);
+    return () => {
+      ipcRenderer.removeListener('printer-status-finished', handler);
     };
   },
 };

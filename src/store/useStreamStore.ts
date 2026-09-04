@@ -17,7 +17,6 @@ interface StreamState {
   printerApiKey: string;
   printerEnabled: boolean;
   printerData: PrinterData | null;
-  isPrinterPanelCompact: boolean;
   
   // Actions
   setRtspUrl: (url: string) => void;
@@ -31,7 +30,6 @@ interface StreamState {
 
   setPrinterConfig: (config: { printerUrl?: string; printerApiKey?: string; printerEnabled?: boolean }) => void;
   setPrinterData: (data: PrinterData) => void;
-  togglePrinterCompact: () => void;
   initFromConfig: (config: AppConfig) => void;
 }
 
@@ -49,7 +47,6 @@ export const useStreamStore = create<StreamState>((set) => ({
   printerApiKey: '',
   printerEnabled: true,
   printerData: null,
-  isPrinterPanelCompact: false,
 
   setRtspUrl: (rtspUrl) => set({ rtspUrl }),
   setStreamPort: (streamPort) => set({ streamPort }),
@@ -66,7 +63,6 @@ export const useStreamStore = create<StreamState>((set) => ({
     printerEnabled: config.printerEnabled !== undefined ? config.printerEnabled : state.printerEnabled,
   })),
   setPrinterData: (printerData) => set({ printerData }),
-  togglePrinterCompact: () => set((state) => ({ isPrinterPanelCompact: !state.isPrinterPanelCompact })),
 
   initFromConfig: (config) => set({
     rtspUrl: config.rtspUrl,

@@ -1,14 +1,18 @@
-import React from 'react';
-import { Camera, Pin, PinOff, Settings, Minus, Square, Copy, X, RefreshCw } from 'lucide-react';
-import { useStreamStore } from '../store/useStreamStore';
+import React from "react";
+import {
+  Camera,
+  Pin,
+  PinOff,
+  Settings,
+  Minus,
+  Square,
+  Copy,
+  X,
+} from "lucide-react";
+import { useStreamStore } from "../store/useStreamStore";
 
-interface HeaderProps {
-  onReconnect?: () => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({ onReconnect }) => {
+export const Header: React.FC = () => {
   const {
-    status,
     isAlwaysOnTop,
     setIsAlwaysOnTop,
     isMaximized,
@@ -41,67 +45,34 @@ export const Header: React.FC<HeaderProps> = ({ onReconnect }) => {
     window.electronAPI?.closeWindow();
   };
 
-  const getStatusBadge = () => {
-    switch (status) {
-      case 'live':
-        return (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
-            LIVE
-          </div>
-        );
-      case 'connecting':
-        return (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-medium uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-            CONNECTING
-          </div>
-        );
-      case 'disconnected':
-      case 'error':
-        return (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-medium uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-rose-400"></span>
-            OFFLINE
-          </div>
-        );
-    }
-  };
-
   return (
-    <header
-      className="drag-handle w-full flex items-center justify-between px-3 py-2 bg-slate-900/95 border-b border-white/10 select-none cursor-default"
-    >
+    <header className="drag-handle w-full flex items-center justify-between px-3 py-2 bg-slate-900 border-b border-white/10 select-none cursor-default">
+      {/* Stream Camera Title */}
       <div className="flex items-center gap-2.5">
-        <div className="p-1 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30">
+        <div className="p-1 rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30 shrink-0">
           <Camera size={15} />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-xs tracking-tight text-white">Prusa Core One L+</span>
-          {getStatusBadge()}
-          {onReconnect && (
-            <button
-              onClick={onReconnect}
-              title="Reconnect Stream"
-              className="no-drag p-1 rounded-md text-slate-400 hover:text-sky-300 hover:bg-white/5 transition-colors"
-            >
-              <RefreshCw size={12} />
-            </button>
-          )}
-        </div>
+        <span className="font-semibold text-xs tracking-tight text-white whitespace-nowrap">
+          Prusa Core One L+
+        </span>
       </div>
 
+      {/* Right: Window & App Actions */}
       <div className="no-drag flex items-center gap-1">
         <button
           onClick={handleTogglePin}
-          title={isAlwaysOnTop ? 'Unpin (Always on top)' : 'Pin on top'}
+          title={isAlwaysOnTop ? "Unpin (Always on top)" : "Pin on top"}
           className={`p-1.5 rounded-md transition-colors ${
             isAlwaysOnTop
-              ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 hover:bg-sky-500/30'
-              : 'text-slate-400 hover:text-slate-200 border border-transparent hover:bg-white/5'
+              ? "bg-sky-500/20 text-sky-400 border border-sky-500/40 hover:bg-sky-500/30"
+              : "text-slate-400 hover:text-slate-200 border border-transparent hover:bg-white/5"
           }`}
         >
-          {isAlwaysOnTop ? <Pin size={13} className="rotate-45" /> : <PinOff size={13} />}
+          {isAlwaysOnTop ? (
+            <Pin size={13} className="rotate-45" />
+          ) : (
+            <PinOff size={13} />
+          )}
         </button>
 
         <button
@@ -109,8 +80,8 @@ export const Header: React.FC<HeaderProps> = ({ onReconnect }) => {
           title="Settings / Stream URL & Printer"
           className={`p-1.5 rounded-md transition-colors ${
             isSettingsOpen
-              ? 'bg-sky-500/20 text-sky-400'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+              ? "bg-sky-500/20 text-sky-400"
+              : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
           }`}
         >
           <Settings size={13} />
@@ -128,10 +99,14 @@ export const Header: React.FC<HeaderProps> = ({ onReconnect }) => {
 
         <button
           onClick={handleToggleMaximize}
-          title={isMaximized ? 'Restore Window' : 'Maximize Window'}
+          title={isMaximized ? "Restore Window" : "Maximize Window"}
           className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-md transition-colors"
         >
-          {isMaximized ? <Copy size={12} className="rotate-180" /> : <Square size={12} />}
+          {isMaximized ? (
+            <Copy size={12} className="rotate-180" />
+          ) : (
+            <Square size={12} />
+          )}
         </button>
 
         <button

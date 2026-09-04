@@ -1,19 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Header } from './components/Header';
-import { VideoPlayer } from './components/VideoPlayer';
-import { SettingsModal } from './components/SettingsModal';
-import { PrinterStatusPanel } from './components/PrinterStatusPanel';
-import { useStreamStore } from './store/useStreamStore';
+import React, { useEffect, useRef } from "react";
+import { Header } from "./components/Header";
+import { ProgressBar } from "./components/ProgressBar";
+import { VideoPlayer } from "./components/VideoPlayer";
+import { SettingsModal } from "./components/SettingsModal";
+import { PrinterStatusPanel } from "./components/PrinterStatusPanel";
+import { useStreamStore } from "./store/useStreamStore";
+import finishedSound from "../assets/finished-sound.mp3";
 
 export const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [reconnectKey, setReconnectKey] = useState(0);
-  const {
-    initFromConfig,
-    setIsMaximized,
-    setPrinterData,
-    isMaximized,
-  } = useStreamStore();
+  const { initFromConfig, setIsMaximized, setPrinterData, isMaximized } =
+    useStreamStore();
 
   useEffect(() => {
     if (window.electronAPI) {
@@ -37,11 +34,13 @@ export const App: React.FC = () => {
       });
 
       // 4. Config changes
-      const cleanupConfig = window.electronAPI.onStreamConfigChange((config) => {
-        if (config) {
-          initFromConfig(config);
-        }
-      });
+      const cleanupConfig = window.electronAPI.onStreamConfigChange(
+        (config) => {
+          if (config) {
+            initFromConfig(config);
+          }
+        },
+      );
 
       // 5. Maximized changes
       const cleanupMaximized = window.electronAPI.onMaximizedChange((isMax) => {
@@ -49,41 +48,50 @@ export const App: React.FC = () => {
       });
 
       // 6. Real-time Printer Status stream
-      const cleanupPrinter = window.electronAPI.onPrinterStatusChange?.((data) => {
-        if (data) {
-          setPrinterData(data);
-        }
+      const cleanupPrinter = window.electronAPI.onPrinterStatusChange?.(
+        (data) => {
+          if (data) {
+            setPrinterData(data);
+          }
+        },
+      );
+
+      // 7. Play sound on printer finished
+      const finishedAudio = new Audio(finishedSound);
+      finishedAudio.preload = "auto";
+
+      const cleanupFinished = window.electronAPI.onPrinterFinished?.(() => {
+        finishedAudio.currentTime = 0;
+        finishedAudio.play().catch((err) => {
+          console.error("Failed to play finished sound:", err);
+        });
       });
 
       return () => {
         cleanupConfig();
         cleanupMaximized();
         if (cleanupPrinter) cleanupPrinter();
+        if (cleanupFinished) cleanupFinished();
       };
     }
   }, []);
 
-  const handleReconnect = () => {
-    setReconnectKey((prev) => prev + 1);
-  };
-
   return (
     <div
-      className={`w-screen h-screen flex flex-col bg-slate-950/95 overflow-hidden transition-all duration-150 relative ${
-        isMaximized
-          ? 'rounded-none border-0'
-          : 'rounded-2xl border border-white/10 shadow-2xl glass-panel'
+      className={`w-screen h-screen flex flex-col bg-slate-950/95 overflow-hidden  relative ${
+        isMaximized ? "rounded-none border-0" : "rounded-2xl"
       }`}
     >
-      <Header onReconnect={handleReconnect} />
+      <Header />
 
-      <main className="flex-1 min-h-0 relative overflow-hidden bg-black">
-        <VideoPlayer
-          key={reconnectKey}
-          canvasRef={canvasRef}
-          onReconnect={handleReconnect}
-        />
+      <main className="flex-1 min-h-0 flex flex-row relative overflow-hidden bg-black">
         <PrinterStatusPanel />
+
+        <div className="flex-1 min-w-0 h-full relative overflow-hidden bg-black flex items-center justify-center">
+          <ProgressBar />
+          <VideoPlayer canvasRef={canvasRef} />
+        </div>
+
         <SettingsModal />
       </main>
     </div>

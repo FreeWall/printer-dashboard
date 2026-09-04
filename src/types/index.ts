@@ -74,6 +74,7 @@ declare global {
       onStreamConfigChange: (callback: (config: AppConfig) => void) => () => void;
       onMaximizedChange: (callback: (isMaximized: boolean) => void) => () => void;
       onPrinterStatusChange: (callback: (data: PrinterData) => void) => () => void;
+      onPrinterFinished: (callback: () => void) => () => void;
     };
     JSMpeg: any;
   }
