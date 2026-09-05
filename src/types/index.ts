@@ -29,6 +29,8 @@ export interface PrinterJob {
   progress?: number; // 0 - 100
   timeRemaining?: number; // seconds
   timePrinting?: number; // seconds
+  filamentChangeIn?: number; // seconds
+  filament_change_in?: number; // seconds
 }
 
 export interface PrinterData {

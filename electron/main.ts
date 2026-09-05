@@ -203,6 +203,8 @@ interface PrinterStatusResponse {
     progress?: number;
     timeRemaining?: number;
     timePrinting?: number;
+    filamentChangeIn?: number;
+    filament_change_in?: number;
   };
   telemetry?: {
     tempNozzle?: number;
@@ -414,6 +416,18 @@ async function pollPrinterStatus() {
               timeRemaining:
                 j.time_remaining ?? statusData?.job?.time_remaining,
               timePrinting: j.time_printing ?? statusData?.job?.time_printing,
+              filamentChangeIn:
+                typeof j.filament_change_in === "number"
+                  ? j.filament_change_in
+                  : typeof statusData?.job?.filament_change_in === "number"
+                    ? statusData.job.filament_change_in
+                    : undefined,
+              filament_change_in:
+                typeof j.filament_change_in === "number"
+                  ? j.filament_change_in
+                  : typeof statusData?.job?.filament_change_in === "number"
+                    ? statusData.job.filament_change_in
+                    : undefined,
             }
           : undefined,
       telemetry: {

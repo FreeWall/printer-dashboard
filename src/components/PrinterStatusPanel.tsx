@@ -1,6 +1,13 @@
 import React from "react";
 import { useStreamStore } from "../store/useStreamStore";
-import { Flame, Layers, Clock, FileCode, AlertCircle } from "lucide-react";
+import {
+  Flame,
+  Layers,
+  Clock,
+  Hourglass,
+  AlertCircle,
+  Repeat,
+} from "lucide-react";
 import { PrinterStateBadge } from "./PrinterStateBadge";
 import { formatDuration } from "../utils/format";
 
@@ -13,6 +20,7 @@ export const PrinterStatusPanel: React.FC = () => {
   const telemetry = printerData?.telemetry;
   const job = printerData?.job;
   const progress = job?.progress;
+  const filamentChangeIn = job?.filamentChangeIn ?? job?.filament_change_in;
   const isPrinting = state === "PRINTING";
   const isPaused = state === "PAUSED";
   const isFinished = state === "FINISHED";
@@ -37,33 +45,44 @@ export const PrinterStatusPanel: React.FC = () => {
 
       {/* Active Job Info (if any) */}
       {job && (isPrinting || isPaused || showProgress) && (
-        <div className="pb-3 border-b border-white/10 flex flex-col gap-1.5 text-xs">
-          {job.name && (
-            <div
-              className="flex items-center gap-1.5 text-slate-300 font-medium truncate"
-              title={job.name}
-            >
-              <FileCode size={13} className="text-sky-400 shrink-0" />
-              <span className="truncate text-[11px]">{job.name}</span>
+        <div className="pb-3 border-b border-white/10">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-xl flex flex-col gap-1 shadow-sm min-w-0">
+              <div className="flex items-center gap-1 text-slate-400">
+                <Hourglass size={12} className="text-slate-400 shrink-0" />
+                <span className="text-[10px] font-medium uppercase tracking-wide truncate">
+                  Left
+                </span>
+              </div>
+              <div className="text-lg font-mono font-bold text-slate-100 truncate">
+                {formatDuration(job.timeRemaining)}
+              </div>
             </div>
-          )}
-          <div className="flex items-center justify-between text-xs text-slate-400 pt-0.5 font-bold">
-            <span className="flex items-center gap-1">
-              <Clock size={11} className="text-slate-500" />
-              <span>
-                Left:{" "}
-                <span className="text-slate-100">
-                  {formatDuration(job.timeRemaining)}
+
+            <div className="rounded-xl flex flex-col gap-1 shadow-sm min-w-0">
+              <div className="flex items-center gap-1 text-slate-400">
+                <Clock size={12} className="text-slate-400 shrink-0" />
+                <span className="text-[10px] font-medium uppercase tracking-wide truncate">
+                  Elapsed
                 </span>
-              </span>
-            </span>
-            {job.timePrinting !== undefined && (
-              <span>
-                Elap:{" "}
-                <span className="text-slate-100">
-                  {formatDuration(job.timePrinting)}
-                </span>
-              </span>
+              </div>
+              <div className="text-lg font-mono font-bold text-slate-100 truncate">
+                {formatDuration(job.timePrinting)}
+              </div>
+            </div>
+
+            {filamentChangeIn !== undefined && filamentChangeIn > 0 && (
+              <div className="rounded-xl flex flex-col gap-1 shadow-sm min-w-0">
+                <div className="flex items-center gap-1 text-slate-400">
+                  <Repeat size={12} className="text-amber-400 shrink-0" />
+                  <span className="text-[10px] font-medium uppercase tracking-wide truncate">
+                    Change In
+                  </span>
+                </div>
+                <div className="font-mono font-bold text-slate-100 truncate">
+                  {formatDuration(filamentChangeIn)}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -96,11 +115,11 @@ export const PrinterStatusPanel: React.FC = () => {
             </span>
           </div>
           <div className="font-mono flex items-baseline gap-0.5 truncate">
-            <span className="font-bold text-slate-100">
+            <span className="text-lg font-bold text-slate-100">
               {hasNozzle ? `${Math.round(telemetry!.tempNozzle!)}°` : "--"}
             </span>
             {telemetry?.targetNozzle ? (
-              <span className="text-xs font-bold text-slate-400">
+              <span className="text-sm font-bold text-slate-400">
                 /{Math.round(telemetry.targetNozzle)}°
               </span>
             ) : null}
@@ -119,11 +138,11 @@ export const PrinterStatusPanel: React.FC = () => {
             </span>
           </div>
           <div className="font-mono flex items-baseline gap-0.5 truncate">
-            <span className="font-bold text-slate-100">
+            <span className="text-lg font-bold text-slate-100">
               {hasBed ? `${Math.round(telemetry!.tempBed!)}°` : "--"}
             </span>
             {telemetry?.targetBed ? (
-              <span className="text-xs font-bold text-slate-400">
+              <span className="text-sm font-bold text-slate-400">
                 /{Math.round(telemetry.targetBed)}°
               </span>
             ) : null}
