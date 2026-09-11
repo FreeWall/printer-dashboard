@@ -1,26 +1,24 @@
-import React, { useEffect, useRef } from "react";
-import { useStreamStore } from "../store/useStreamStore";
-import { Loader2, VideoOff } from "lucide-react";
+import React, { useEffect, useRef } from 'react';
+import { useStreamStore } from '../store/useStreamStore';
+import { Loader2, VideoOff } from 'lucide-react';
 
 interface VideoPlayerProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ canvasRef }) => {
-  const { streamPort, status, setStatus, aspectRatio, rtspUrl, printerData } =
-    useStreamStore();
+  const { streamPort, status, setStatus, aspectRatio, rtspUrl, printerData } = useStreamStore();
   const playerRef = useRef<any>(null);
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef(true);
 
   // Only consider offline if printerData has explicitly arrived and reports OFFLINE
-  const isPrinterOffline =
-    printerData !== null && printerData.state === "OFFLINE";
+  const isPrinterOffline = printerData !== null && printerData.state === 'OFFLINE';
 
   const clearCanvas = () => {
     if (canvasRef.current) {
       try {
-        const ctx = canvasRef.current.getContext("2d");
+        const ctx = canvasRef.current.getContext('2d');
         if (ctx) {
           ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
@@ -65,7 +63,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ canvasRef }) => {
     if (isPrinterOffline) {
       destroyPlayer();
       clearCanvas();
-      setStatus("disconnected");
+      setStatus('disconnected');
       return;
     }
 
@@ -75,7 +73,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ canvasRef }) => {
     }
 
     destroyPlayer();
-    setStatus("connecting");
+    setStatus('connecting');
 
     const wsUrl = `ws://127.0.0.1:${streamPort}`;
 
@@ -88,7 +86,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ canvasRef }) => {
         videoBufferSize: 4 * 1024 * 1024,
         onVideoDecode: () => {
           if (isMountedRef.current) {
-            setStatus("live");
+            setStatus('live');
           }
         },
         onSourceEstablished: () => {
@@ -96,16 +94,16 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ canvasRef }) => {
         },
         onSourceCompleted: () => {
           if (isMountedRef.current) {
-            setStatus("disconnected");
+            setStatus('disconnected');
             clearCanvas();
             scheduleReconnect(2000);
           }
         },
       });
     } catch (err) {
-      console.error("Failed to instantiate JSMpeg player:", err);
+      console.error('Failed to instantiate JSMpeg player:', err);
       if (isMountedRef.current) {
-        setStatus("error");
+        setStatus('error');
         clearCanvas();
         scheduleReconnect(2500);
       }
@@ -131,51 +129,54 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ canvasRef }) => {
       clearReconnectTimer();
       destroyPlayer();
       clearCanvas();
-      setStatus("disconnected");
+      setStatus('disconnected');
     } else {
-      if (status === "disconnected" || status === "error") {
+      if (status === 'disconnected' || status === 'error') {
         initStream();
       }
     }
   }, [isPrinterOffline]);
 
   return (
-    <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black">
       {/* Canvas stays permanently mounted with valid size, but opacity-0 when not live to prevent frozen frame */}
       <canvas
         ref={canvasRef}
-        className={`w-full h-full transition-opacity duration-200 ${
-          status === "live" && !isPrinterOffline ? "opacity-100" : "opacity-0"
-        } ${aspectRatio === "contain" ? "object-contain" : "object-cover"}`}
+        className={`h-full w-full transition-opacity duration-200 ${
+          status === 'live' && !isPrinterOffline ? 'opacity-100' : 'opacity-0'
+        } ${aspectRatio === 'contain' ? 'object-contain' : 'object-cover'}`}
       />
 
       {/* Offline Overlay */}
       {isPrinterOffline && (
-        <div className="absolute inset-0 bg-black flex flex-col items-center justify-center gap-2 text-slate-500 select-none pointer-events-none">
-          <VideoOff className="text-slate-600" size={32} />
-          <p className="text-xs font-medium text-slate-400">
-            Printer is offline
-          </p>
+        <div className="pointer-events-none absolute inset-0 flex select-none flex-col items-center justify-center gap-2 bg-black text-slate-500">
+          <VideoOff
+            className="text-slate-600"
+            size={32}
+          />
+          <p className="text-xs font-medium text-slate-400">Printer is offline</p>
         </div>
       )}
 
       {/* Connecting Overlay */}
-      {!isPrinterOffline && status === "connecting" && (
-        <div className="absolute inset-0 bg-black flex flex-col items-center justify-center gap-2 text-slate-300 select-none pointer-events-none">
-          <Loader2 className="animate-spin text-sky-400" size={26} />
-          <p className="text-xs font-medium text-slate-400">
-            Connecting stream...
-          </p>
+      {!isPrinterOffline && status === 'connecting' && (
+        <div className="pointer-events-none absolute inset-0 flex select-none flex-col items-center justify-center gap-2 bg-black text-slate-300">
+          <Loader2
+            className="animate-spin text-sky-400"
+            size={26}
+          />
+          <p className="text-xs font-medium text-slate-400">Connecting stream...</p>
         </div>
       )}
 
       {/* Reconnecting Overlay */}
-      {!isPrinterOffline && (status === "disconnected" || status === "error") && (
-        <div className="absolute inset-0 bg-black flex flex-col items-center justify-center gap-2 text-slate-300 select-none pointer-events-none">
-          <Loader2 className="animate-spin text-sky-400" size={26} />
-          <p className="text-xs font-medium text-slate-300">
-            Reconnecting stream...
-          </p>
+      {!isPrinterOffline && (status === 'disconnected' || status === 'error') && (
+        <div className="pointer-events-none absolute inset-0 flex select-none flex-col items-center justify-center gap-2 bg-black text-slate-300">
+          <Loader2
+            className="animate-spin text-sky-400"
+            size={26}
+          />
+          <p className="text-xs font-medium text-slate-300">Reconnecting stream...</p>
         </div>
       )}
     </div>

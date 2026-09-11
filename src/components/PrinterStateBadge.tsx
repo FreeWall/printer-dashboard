@@ -11,21 +11,27 @@ export const PrinterStateBadge: React.FC<PrinterStateBadgeProps> = ({ state, cla
   switch (state) {
     case 'PRINTING':
       return (
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-sky-500/20 border border-sky-500/40 text-sky-400 text-[11px] font-bold tracking-wide ${className}`}>
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse shadow-[0_0_8px_#38bdf8]" />
+        <div
+          className={`flex items-center gap-1.5 rounded-full border border-sky-500/40 bg-sky-500/20 px-2 py-0.5 text-[11px] font-bold tracking-wide text-sky-400 ${className}`}
+        >
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
           PRINTING
         </div>
       );
     case 'PAUSED':
       return (
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 text-[11px] font-bold tracking-wide ${className}`}>
+        <div
+          className={`flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold tracking-wide text-amber-400 ${className}`}
+        >
           <PauseCircle size={12} />
           PAUSED
         </div>
       );
     case 'FINISHED':
       return (
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[11px] font-bold tracking-wide ${className}`}>
+        <div
+          className={`flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold tracking-wide text-emerald-400 ${className}`}
+        >
           <CheckCircle2 size={12} />
           FINISHED
         </div>
@@ -33,7 +39,9 @@ export const PrinterStateBadge: React.FC<PrinterStateBadgeProps> = ({ state, cla
     case 'BUSY':
     case 'ATTENTION':
       return (
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-400 text-[11px] font-bold tracking-wide ${className}`}>
+        <div
+          className={`flex items-center gap-1.5 rounded-full border border-orange-500/40 bg-orange-500/20 px-2 py-0.5 text-[11px] font-bold tracking-wide text-orange-400 ${className}`}
+        >
           <AlertCircle size={12} />
           {state}
         </div>
@@ -41,22 +49,28 @@ export const PrinterStateBadge: React.FC<PrinterStateBadgeProps> = ({ state, cla
     case 'READY':
     case 'IDLE':
       return (
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-700/60 border border-slate-600 text-slate-300 text-[11px] font-medium tracking-wide ${className}`}>
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+        <div
+          className={`flex items-center gap-1.5 rounded-full border border-slate-600 bg-slate-700/60 px-2 py-0.5 text-[11px] font-medium tracking-wide text-slate-300 ${className}`}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
           IDLE
         </div>
       );
     case 'STOPPED':
       return (
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[11px] font-bold tracking-wide ${className}`}>
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+        <div
+          className={`flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/20 px-2 py-0.5 text-[11px] font-bold tracking-wide text-rose-300 ${className}`}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
           STOPPED
         </div>
       );
     case 'CONNECTING':
       return (
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 text-[11px] font-medium tracking-wide ${className}`}>
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping" />
+        <div
+          className={`flex items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-500/15 px-2 py-0.5 text-[11px] font-medium tracking-wide text-sky-400 ${className}`}
+        >
+          <span className="h-1.5 w-1.5 animate-ping rounded-full bg-sky-400" />
           CONNECTING
         </div>
       );
@@ -64,8 +78,10 @@ export const PrinterStateBadge: React.FC<PrinterStateBadgeProps> = ({ state, cla
     case 'ERROR':
     default:
       return (
-        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-[11px] font-medium tracking-wide ${className}`}>
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+        <div
+          className={`flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-500/15 px-2 py-0.5 text-[11px] font-medium tracking-wide text-rose-400 ${className}`}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
           OFFLINE
         </div>
       );

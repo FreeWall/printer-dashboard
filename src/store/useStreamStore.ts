@@ -10,25 +10,26 @@ interface StreamState {
   isMaximized: boolean;
   isSettingsOpen: boolean;
   aspectRatio: 'contain' | 'cover';
-  snapshotToast: string | null;
 
   // Printer Status
   printerUrl: string;
   printerApiKey: string;
   printerEnabled: boolean;
   printerData: PrinterData | null;
-  
+
   // Actions
   setRtspUrl: (url: string) => void;
-  setStreamPort: (port: number) => void;
   setStatus: (status: StreamStatus) => void;
   setIsAlwaysOnTop: (val: boolean) => void;
   setIsMaximized: (val: boolean) => void;
   setIsSettingsOpen: (open: boolean) => void;
   setAspectRatio: (ratio: 'contain' | 'cover') => void;
-  setSnapshotToast: (msg: string | null) => void;
 
-  setPrinterConfig: (config: { printerUrl?: string; printerApiKey?: string; printerEnabled?: boolean }) => void;
+  setPrinterConfig: (config: {
+    printerUrl?: string;
+    printerApiKey?: string;
+    printerEnabled?: boolean;
+  }) => void;
   setPrinterData: (data: PrinterData) => void;
   initFromConfig: (config: AppConfig) => void;
 }
@@ -41,7 +42,6 @@ export const useStreamStore = create<StreamState>((set) => ({
   isMaximized: false,
   isSettingsOpen: false,
   aspectRatio: 'contain',
-  snapshotToast: null,
 
   printerUrl: 'http://192.168.0.133',
   printerApiKey: '',
@@ -49,27 +49,29 @@ export const useStreamStore = create<StreamState>((set) => ({
   printerData: null,
 
   setRtspUrl: (rtspUrl) => set({ rtspUrl }),
-  setStreamPort: (streamPort) => set({ streamPort }),
   setStatus: (status) => set({ status }),
   setIsAlwaysOnTop: (isAlwaysOnTop) => set({ isAlwaysOnTop }),
   setIsMaximized: (isMaximized) => set({ isMaximized }),
   setIsSettingsOpen: (isSettingsOpen) => set({ isSettingsOpen }),
   setAspectRatio: (aspectRatio) => set({ aspectRatio }),
-  setSnapshotToast: (snapshotToast) => set({ snapshotToast }),
 
-  setPrinterConfig: (config) => set((state) => ({
-    printerUrl: config.printerUrl !== undefined ? config.printerUrl : state.printerUrl,
-    printerApiKey: config.printerApiKey !== undefined ? config.printerApiKey : state.printerApiKey,
-    printerEnabled: config.printerEnabled !== undefined ? config.printerEnabled : state.printerEnabled,
-  })),
+  setPrinterConfig: (config) =>
+    set((state) => ({
+      printerUrl: config.printerUrl !== undefined ? config.printerUrl : state.printerUrl,
+      printerApiKey:
+        config.printerApiKey !== undefined ? config.printerApiKey : state.printerApiKey,
+      printerEnabled:
+        config.printerEnabled !== undefined ? config.printerEnabled : state.printerEnabled,
+    })),
   setPrinterData: (printerData) => set({ printerData }),
 
-  initFromConfig: (config) => set({
-    rtspUrl: config.rtspUrl,
-    streamPort: config.streamPort,
-    isAlwaysOnTop: config.isAlwaysOnTop,
-    printerUrl: config.printerUrl || 'http://192.168.0.133',
-    printerApiKey: config.printerApiKey || '',
-    printerEnabled: config.printerEnabled ?? true,
-  }),
+  initFromConfig: (config) =>
+    set({
+      rtspUrl: config.rtspUrl,
+      streamPort: config.streamPort,
+      isAlwaysOnTop: config.isAlwaysOnTop,
+      printerUrl: config.printerUrl || 'http://192.168.0.133',
+      printerApiKey: config.printerApiKey || '',
+      printerEnabled: config.printerEnabled ?? true,
+    }),
 }));

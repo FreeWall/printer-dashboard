@@ -7,7 +7,7 @@ import { PrinterStatusPanel } from "./components/PrinterStatusPanel";
 import { useStreamStore } from "./store/useStreamStore";
 import finishedSound from "../assets/finished-sound.mp3";
 
-export const App: React.FC = () => {
+const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { initFromConfig, setIsMaximized, setPrinterData, isMaximized } =
     useStreamStore();
@@ -62,6 +62,7 @@ export const App: React.FC = () => {
 
       const cleanupFinished = window.electronAPI.onPrinterFinished?.(() => {
         finishedAudio.currentTime = 0;
+        finishedAudio.volume = 0.7;
         finishedAudio.play().catch((err) => {
           console.error("Failed to play finished sound:", err);
         });

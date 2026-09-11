@@ -21,6 +21,8 @@ export interface PrinterTelemetry {
   axisZ?: number;
   speed?: number;
   flow?: number;
+  fanHotend?: number;
+  fanPrint?: number;
 }
 
 export interface PrinterJob {
@@ -52,13 +54,6 @@ export interface AppConfig {
   printerEnabled: boolean;
 }
 
-export interface StreamSettings {
-  rtspUrl: string;
-  isAlwaysOnTop: boolean;
-  aspectRatio: 'contain' | 'cover';
-  streamPort: number;
-}
-
 declare global {
   interface Window {
     electronAPI?: {
@@ -70,9 +65,15 @@ declare global {
       isMaximized: () => Promise<boolean>;
       getConfig: () => Promise<AppConfig>;
       setRtspUrl: (url: string) => Promise<boolean>;
-      setPrinterConfig: (config: { printerUrl?: string; printerApiKey?: string; printerEnabled?: boolean }) => Promise<boolean>;
+      setPrinterConfig: (config: {
+        printerUrl?: string;
+        printerApiKey?: string;
+        printerEnabled?: boolean;
+      }) => Promise<boolean>;
       getPrinterStatus: () => Promise<PrinterData>;
-      saveSnapshot: (dataUrl: string) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+      saveSnapshot: (
+        dataUrl: string,
+      ) => Promise<{ success: boolean; filePath?: string; error?: string }>;
       onStreamConfigChange: (callback: (config: AppConfig) => void) => () => void;
       onMaximizedChange: (callback: (isMaximized: boolean) => void) => () => void;
       onPrinterStatusChange: (callback: (data: PrinterData) => void) => () => void;

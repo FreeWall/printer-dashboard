@@ -18,9 +18,15 @@ export interface ElectronAPI {
   isMaximized: () => Promise<boolean>;
   getConfig: () => Promise<AppConfig>;
   setRtspUrl: (url: string) => Promise<boolean>;
-  setPrinterConfig: (config: { printerUrl?: string; printerApiKey?: string; printerEnabled?: boolean }) => Promise<boolean>;
+  setPrinterConfig: (config: {
+    printerUrl?: string;
+    printerApiKey?: string;
+    printerEnabled?: boolean;
+  }) => Promise<boolean>;
   getPrinterStatus: () => Promise<any>;
-  saveSnapshot: (dataUrl: string) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+  saveSnapshot: (
+    dataUrl: string,
+  ) => Promise<{ success: boolean; filePath?: string; error?: string }>;
   onStreamConfigChange: (callback: (config: AppConfig) => void) => () => void;
   onMaximizedChange: (callback: (isMaximized: boolean) => void) => () => void;
   onPrinterStatusChange: (callback: (data: any) => void) => () => void;
