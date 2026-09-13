@@ -25,7 +25,7 @@ export const PrinterStatusPanel: React.FC = () => {
   const hasFans = telemetry?.fanHotend !== undefined || telemetry?.fanPrint !== undefined;
 
   return (
-    <aside className="flex h-full w-52 shrink-0 select-none flex-col gap-3.5 overflow-y-auto border-r border-white/10 bg-slate-900/100 p-3.5">
+    <aside className="absolute bottom-0 left-0 top-0 z-10 flex h-full w-52 shrink-0 select-none flex-col gap-3.5 overflow-y-auto border-r border-white/10 bg-slate-900/90 p-3.5 backdrop-blur-md">
       {/* Status Badge & Progress */}
       <div className="flex items-center gap-2 border-b border-white/10 pb-3">
         <PrinterStateBadge state={state} />

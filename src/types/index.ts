@@ -65,6 +65,7 @@ declare global {
       isMaximized: () => Promise<boolean>;
       getConfig: () => Promise<AppConfig>;
       setRtspUrl: (url: string) => Promise<boolean>;
+      restartStream: () => Promise<boolean>;
       setPrinterConfig: (config: {
         printerUrl?: string;
         printerApiKey?: string;

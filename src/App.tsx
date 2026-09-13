@@ -85,14 +85,10 @@ const App: React.FC = () => {
     >
       <Header />
 
-      <main className="flex-1 min-h-0 flex flex-row relative overflow-hidden bg-black">
+      <main className="relative min-h-0 flex-1 overflow-hidden bg-black">
+        <ProgressBar />
+        <VideoPlayer canvasRef={canvasRef} />
         <PrinterStatusPanel />
-
-        <div className="flex-1 min-w-0 h-full relative overflow-hidden bg-black flex items-center justify-center">
-          <ProgressBar />
-          <VideoPlayer canvasRef={canvasRef} />
-        </div>
-
         <SettingsModal />
       </main>
     </div>

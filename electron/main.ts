@@ -76,24 +76,52 @@ const TRAY_ICON_BASE64 =
 // Custom RTSP to MPEG-TS WebSocket Relay
 let wss: WebSocketServer | null = null;
 let ffmpegProcess: ChildProcess | null = null;
+let ffmpegRestartTimer: NodeJS.Timeout | null = null;
 
-function stopFfmpeg() {
-  if (ffmpegProcess) {
-    console.log('[FFmpeg] Stopping process...');
-    try {
-      ffmpegProcess.kill('SIGKILL');
-    } catch (e) {
-      // ignore
-    }
-    ffmpegProcess = null;
+function clearFfmpegRestartTimer() {
+  if (ffmpegRestartTimer) {
+    clearTimeout(ffmpegRestartTimer);
+    ffmpegRestartTimer = null;
   }
 }
 
-function startFfmpeg() {
+function stopFfmpeg() {
+  clearFfmpegRestartTimer();
+  if (ffmpegProcess) {
+    const proc = ffmpegProcess;
+    ffmpegProcess = null;
+    console.log(`[FFmpeg] Stopping process (PID ${proc.pid})...`);
+    try {
+      proc.stdout?.removeAllListeners();
+      proc.stderr?.removeAllListeners();
+      proc.removeAllListeners();
+      proc.kill('SIGKILL');
+    } catch (e) {
+      // ignore
+    }
+  }
+}
+
+function startFfmpeg(forceRestart = false) {
+  clearFfmpegRestartTimer();
+
+  // If already running and healthy, avoid duplicate spawns unless forced
+  if (!forceRestart && ffmpegProcess && !ffmpegProcess.killed && ffmpegProcess.exitCode === null) {
+    return;
+  }
+
   stopFfmpeg();
 
   console.log(`[FFmpeg] Spawning relay for ${currentRtspUrl}...`);
-  ffmpegProcess = spawn('ffmpeg', [
+  const proc = spawn('ffmpeg', [
+    '-fflags',
+    'nobuffer',
+    '-flags',
+    'low_delay',
+    '-probesize',
+    '32',
+    '-analyzeduration',
+    '0',
     '-rtsp_transport',
     'tcp',
     '-i',
@@ -109,15 +137,20 @@ function startFfmpeg() {
     '-maxrate',
     '3000k',
     '-bufsize',
-    '2000k',
+    '1000k',
+    '-tune',
+    'zerolatency',
     '-bf',
     '0',
     '-an',
     '-',
   ]);
 
-  ffmpegProcess.stdout?.on('data', (data: Buffer) => {
-    if (!wss) return;
+  ffmpegProcess = proc;
+
+  proc.stdout?.on('data', (data: Buffer) => {
+    // Only forward data if this process is STILL the active ffmpegProcess
+    if (ffmpegProcess !== proc || !wss) return;
     for (const client of wss.clients) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(data);
@@ -125,21 +158,36 @@ function startFfmpeg() {
     }
   });
 
-  ffmpegProcess.stderr?.on('data', (data: Buffer) => {
+  proc.stderr?.on('data', (data: Buffer) => {
+    if (ffmpegProcess !== proc) return;
     const msg = data.toString();
     if (msg.includes('error') || msg.includes('Error') || msg.includes('Input #0')) {
       console.log('[FFmpeg]', msg.trim());
     }
   });
 
-  ffmpegProcess.on('exit', (code, signal) => {
-    console.log(`[FFmpeg] Exited (code: ${code}, signal: ${signal})`);
-    ffmpegProcess = null;
-  });
+  const handleProcessExit = (code: number | null, signal: string | null) => {
+    console.log(`[FFmpeg] PID ${proc.pid} Exited (code: ${code}, signal: ${signal})`);
+    if (ffmpegProcess === proc) {
+      ffmpegProcess = null;
+    }
 
-  ffmpegProcess.on('error', (err) => {
-    console.error('[FFmpeg] Spawn error (make sure ffmpeg is in PATH):', err);
-    ffmpegProcess = null;
+    if (!isQuitting && wss && wss.clients.size > 0 && !ffmpegProcess) {
+      clearFfmpegRestartTimer();
+      ffmpegRestartTimer = setTimeout(() => {
+        if (!isQuitting && wss && wss.clients.size > 0 && !ffmpegProcess) {
+          console.log('[FFmpeg] Clients connected, retrying stream connection...');
+          startFfmpeg();
+        }
+      }, 2000);
+    }
+  };
+
+  proc.on('exit', handleProcessExit);
+
+  proc.on('error', (err) => {
+    console.error(`[FFmpeg] PID ${proc.pid} Spawn error:`, err);
+    handleProcessExit(1, null);
   });
 }
 
@@ -415,6 +463,17 @@ async function pollPrinterStatus() {
     };
   }
 
+  if (
+    latestPrinterStatus.isConnected &&
+    latestPrinterStatus.state !== 'OFFLINE' &&
+    latestPrinterStatus.state !== 'CONNECTING'
+  ) {
+    if (wss && wss.clients.size > 0 && !ffmpegProcess) {
+      console.log('[FFmpeg] Printer is online, ensuring stream relay is running...');
+      startFfmpeg();
+    }
+  }
+
   sendPrinterStatusUpdate();
 }
 
@@ -603,11 +662,11 @@ function createWindow() {
   const appIcon = getAppIcon();
 
   mainWindow = new BrowserWindow({
-    width: 976,
+    width: 820,
     height: 477,
-    minWidth: 976,
+    minWidth: 820,
     minHeight: 477,
-    x: width - 976,
+    x: width - 820,
     y: height,
     icon: appIcon,
     frame: false,
@@ -700,8 +759,16 @@ ipcMain.handle('set-rtsp-url', (_event, newUrl: string) => {
     tray?.setToolTip(`Printer Dashboard (${currentRtspUrl})`);
     notifyConfigChanged();
     if (wss && wss.clients.size > 0) {
-      startFfmpeg();
+      startFfmpeg(true);
     }
+    return true;
+  }
+  return false;
+});
+
+ipcMain.handle('restart-stream', () => {
+  if (wss && wss.clients.size > 0) {
+    startFfmpeg(true);
     return true;
   }
   return false;

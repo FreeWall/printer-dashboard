@@ -49,7 +49,8 @@ export const useStreamStore = create<StreamState>((set) => ({
   printerData: null,
 
   setRtspUrl: (rtspUrl) => set({ rtspUrl }),
-  setStatus: (status) => set({ status }),
+  setStatus: (status) =>
+    set((state) => (state.status === status ? state : { status })),
   setIsAlwaysOnTop: (isAlwaysOnTop) => set({ isAlwaysOnTop }),
   setIsMaximized: (isMaximized) => set({ isMaximized }),
   setIsSettingsOpen: (isSettingsOpen) => set({ isSettingsOpen }),

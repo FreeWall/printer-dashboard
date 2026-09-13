@@ -18,6 +18,7 @@ export interface ElectronAPI {
   isMaximized: () => Promise<boolean>;
   getConfig: () => Promise<AppConfig>;
   setRtspUrl: (url: string) => Promise<boolean>;
+  restartStream: () => Promise<boolean>;
   setPrinterConfig: (config: {
     printerUrl?: string;
     printerApiKey?: string;
@@ -42,6 +43,7 @@ const electronAPI: ElectronAPI = {
   isMaximized: () => ipcRenderer.invoke('is-maximized'),
   getConfig: () => ipcRenderer.invoke('get-config'),
   setRtspUrl: (url: string) => ipcRenderer.invoke('set-rtsp-url', url),
+  restartStream: () => ipcRenderer.invoke('restart-stream'),
   setPrinterConfig: (config) => ipcRenderer.invoke('set-printer-config', config),
   getPrinterStatus: () => ipcRenderer.invoke('get-printer-status'),
   saveSnapshot: (dataUrl: string) => ipcRenderer.invoke('save-snapshot', dataUrl),
